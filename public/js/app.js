@@ -129,47 +129,47 @@ $(document).ready(function () {
             },
             success: function (res) {
                 console.log(res)
-                // if (res.success) {
-                //     list.css({
-                //         opacity: '0.5'
-                //     })
-                //     span.append(
-                //         `
-                //             <img src="/images/crossout.png" class="crossout" style="width: 100%; display: block;" />
-                //         `
-                //     )
-                // } else if (!res.success) {
-                //     Toastify({
-                //         text: res.message,
-                //         duration: 3000,
-                //         stopOnFocus: true,
-                //         position: "right",
-                //         style: {
-                //             background: "red",
-                //             borderRadius: "10px",
-                //         },
-                //         offset: {
-                //             y: 30
-                //         },
-                //     }).showToast();
-                // }
+                if (res.success) {
+                    list.css({
+                        opacity: '0.5'
+                    })
+                    span.append(
+                        `
+                            <img src="/images/crossout.png" class="crossout" style="width: 100%; display: block;" />
+                        `
+                    )
+                } else if (!res.success) {
+                    Toastify({
+                        text: res.message,
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            background: "red",
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
+                }
             },
-            // error: function (xhr, status, err) {
-            //     console.error(status, err)
-            //     Toastify({
-            //         text: "Error while updaing",
-            //         duration: 3000,
-            //         stopOnFocus: true,
-            //         position: "right",
-            //         style: {
-            //             background: "red",
-            //             borderRadius: "10px",
-            //         },
-            //         offset: {
-            //             y: 30
-            //         },
-            //     }).showToast();
-            // }
+            error: function (xhr, status, err) {
+                console.error(status, err)
+                Toastify({
+                    text: "Error while updaing",
+                    duration: 3000,
+                    stopOnFocus: true,
+                    position: "right",
+                    style: {
+                        background: "red",
+                        borderRadius: "10px",
+                    },
+                    offset: {
+                        y: 30
+                    },
+                }).showToast();
+            }
         })
     })
 
@@ -185,5 +185,227 @@ $(document).ready(function () {
             display: '',
             right: ''
         });
+    });
+
+    $('#list').on('dblclick', 'span', function () {
+        let spanValue = $(this).text();
+        if (!spanValue) return
+        $(this).html(
+            `
+                <input type="text" class="editDescription" value=${spanValue} />
+                <button class="saveBtn">Save</button>
+            `
+        )
+    });
+
+    $('#list').on('click', '.saveBtn', function () {
+        let row = $(this).closest('.list')
+        let rowId = row.attr('id').split('_')[1]
+        if (!rowId) {
+            return
+        }
+        let inputVal = row.find('.editDescription').val()
+        row.find('span').html(inputVal)
+        $(this).attr('disabled', true).html(
+            $('#loader').show()
+        );
+
+        $.ajax({
+            method: 'PUT',
+            url: 'http://localhost:8081/todos/' + rowId,
+            data: {
+                description: inputVal
+            },
+            dataType: 'json',
+            success: function (res) {
+                console.log(res)
+                if (res.success) {
+                    Toastify({
+                        text: res.message,
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
+                    $(this).attr('disabled', false).html(
+                        `<button class="saveBtn">Save</button>`
+                    );
+                } else if (!res.success) {
+                    Toastify({
+                        text: res.message,
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            background: "red",
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
+                    $(this).attr('disabled', false).html(
+                        `<button class="saveBtn">Save</button>`
+                    );
+                }
+            },
+            error: function (xhr, status, err) {
+                console.error(status, err)
+                Toastify({
+                    text: 'Error while updating...',
+                    duration: 3000,
+                    stopOnFocus: true,
+                    position: 'right',
+                    style: {
+                        background: 'red',
+                        borderRadius: '10px',
+                    },
+                    offset: { y: 30 },
+                }).showToast();
+            }
+        })
+    })
+
+    $('#list').on('click', '.colortab', function () {
+        let rowId = $(this).closest('.list').attr('id').split('_')[1]
+        if (!rowId) return;
+        if ($(this).find('.colorpicker').length == 0) {
+            let colorPicker = $('<input class="colorpicker" type="color" />')
+            $(this).append(colorPicker)
+
+            let colorVal;
+
+            colorPicker.on('input', function () {
+                colorVal = $(this).val()
+                console.log(colorVal)
+                $(this).closest('li').find('span').css({
+                    background: colorVal
+                })
+            })
+
+            colorPicker.on('change', function () {
+                $.ajax({
+                    method: 'PUT',
+                    url: 'http://localhost:8081/todos/' + rowId,
+                    data: {
+                        color: colorVal
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res)
+                        if (res.success) {
+                            Toastify({
+                                text: res.message,
+                                duration: 3000,
+                                stopOnFocus: true,
+                                position: "right",
+                                style: {
+                                    borderRadius: "10px",
+                                },
+                                offset: {
+                                    y: 30
+                                },
+                            }).showToast();
+
+                            $('.colorpicker').remove();
+
+                        } else if (!res.success) {
+                            Toastify({
+                                text: res.message,
+                                duration: 3000,
+                                stopOnFocus: true,
+                                position: "right",
+                                style: {
+                                    background: "red",
+                                    borderRadius: "10px",
+                                },
+                                offset: {
+                                    y: 30
+                                },
+                            }).showToast();
+                        }
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err)
+                        Toastify({
+                            text: 'Error updating color',
+                            duration: 3000,
+                            stopOnFocus: true,
+                            position: 'right',
+                            style: {
+                                background: 'red',
+                                borderRadius: '10px',
+                            },
+                            offset: { y: 30 },
+                        }).showToast();
+                    }
+                })
+            });
+        }
+    })
+
+    $('#list').on('dblclick', '.deletetab', function () {
+        let list = $(this).closest('.list');
+        let rowId = list.attr('id').split('_')[1]
+        if (!rowId) return
+        $('#loader').show()
+        $.ajax({
+            method: 'DELETE',
+            url: 'http://localhost:8081/todos/' + rowId,
+            dataType: 'json',
+            success: function (res) {
+                if (res.success) {
+                    Toastify({
+                        text: res.message,
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
+
+                    $('#loader').hide()
+                    list.remove();
+                } else if (!res.success) {
+                    Toastify({
+                        text: res.message,
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            background: "red",
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
+                    $('#loader').hide()
+                }
+            },
+            error: function (xhr, status, err) {
+                console.error(status, err)
+                Toastify({
+                    text: 'Error while deleting',
+                    duration: 3000,
+                    stopOnFocus: true,
+                    position: 'right',
+                    style: {
+                        background: 'red',
+                        borderRadius: '10px',
+                    },
+                    offset: { y: 30 },
+                }).showToast();
+            }
+        })
     });
 })

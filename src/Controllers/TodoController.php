@@ -86,10 +86,48 @@ class TodoController
     public function update(Request $request, Response $response, $args)
     {
         $id = $args['id'];
+        if (!is_numeric($id)) {
+            $response
+                ->getBody()
+                ->write(json_encode(['success' => false, 'message' => "id must be number `$id is given` "]));
+            return $response
+                ->withStatus(405)
+                ->withHeader('Content-Type', 'application/json');
+        }
+        $todo = Todo::find($id);
         $data = $request->getParsedBody();
-        $response->getBody()->write(json_encode(['success' => true, 'message' => 'Todo id', 'data' => $id, 'up' => $data]));
-        return $response->withHeader('content-type', 'application/json');
+
+        if ($todo) {
+            if (isset($data['description'])) {
+                $todo->description = $data['description'];
+            }
+            if (isset($data['color'])) {
+                $todo->color = $data['color'];
+            }
+            if (isset($data['item_position'])) {
+                $todo->item_position = $data['item_position'];
+            }
+            if (isset($data['is_done'])) {
+                $todo->is_done = $data['is_done'];
+            }
+
+            $todo->save();
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Todo updated successfully.',
+                'data' => $todo
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Todo not found.'
+            ]));
+            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+        }
     }
+
 
     public function delete(Request $request, Response $response, $args)
     {
