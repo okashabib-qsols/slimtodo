@@ -4,51 +4,78 @@ $(document).ready(function () {
 
     $("#list").sortable({
         axis: 'y',
+        revert: true,
         update: function (e, ui) {
             console.log($(e.target), ui.items)
 
-            // var data = $(this).sortable('toArray', {
-            //     attribute: 'id'
-            // });
-            // if (!data) return;
-            // $.ajax({
-            //     method: "POST",
-            //     url: "actions/updateposition.php",
-            //     dataType: "json",
-            //     data: {
-            //         itemPosition: data.join(',')
-            //     },
-            //     success: function (response) {
-            //         if (response.success) {
-            //             Toastify({
-            //                 text: response.message,
-            //                 duration: 3000,
-            //                 stopOnFocus: true,
-            //                 position: "right",
-            //                 style: {
-            //                     borderRadius: "10px",
-            //                 },
-            //                 offset: {
-            //                     y: 30
-            //                 },
-            //             }).showToast();
-            //         } else if (!response.success) {
-            //             Toastify({
-            //                 text: response.message,
-            //                 duration: 3000,
-            //                 stopOnFocus: true,
-            //                 position: "right",
-            //                 style: {
-            //                     background: "red",
-            //                     borderRadius: "10px",
-            //                 },
-            //                 offset: {
-            //                     y: 30
-            //                 },
-            //             }).showToast();
-            //         }
-            //     }
-            // });
+            var data = $(this).sortable('toArray', {
+                attribute: 'id'
+            });
+            if (!data) return;
+
+            var itemPositions = data.map(function (id, index) {
+                return {
+                    id: id.split('_')[1],
+                    position: index + 1
+                };
+            });
+            console.log(itemPositions)
+
+            $.ajax({
+                method: "PUT",
+                url: "http://localhost:8080/todos",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    item_positions: itemPositions
+                }),
+                success: function (response) {
+                    console.log(response)
+                    if (response.success) {
+                        Toastify({
+                            text: response.message,
+                            duration: 3000,
+                            stopOnFocus: true,
+                            position: "right",
+                            style: {
+                                borderRadius: "10px",
+                            },
+                            offset: {
+                                y: 30
+                            },
+                        }).showToast();
+                    } else if (!response.success) {
+                        Toastify({
+                            text: response.message,
+                            duration: 3000,
+                            stopOnFocus: true,
+                            position: "right",
+                            style: {
+                                background: "red",
+                                borderRadius: "10px",
+                            },
+                            offset: {
+                                y: 30
+                            },
+                        }).showToast();
+                    }
+                },error: function (x,s,e){
+                    console.error(x,s,e)
+                    Toastify({
+                        text: "Something went wrong",
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            background: "red",
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
+                }
+            });
         }
     });
 
@@ -107,6 +134,23 @@ $(document).ready(function () {
                         },
                     }).showToast();
                 }
+            },
+            error: function (x, s, e) {
+                console.log(x, s, e)
+                $('#add-new-submit').attr('disabled', false).html('Add')
+                Toastify({
+                    text: "Something went wrong",
+                    duration: 3000,
+                    stopOnFocus: true,
+                    position: "right",
+                    style: {
+                        background: "red",
+                        borderRadius: "10px",
+                    },
+                    offset: {
+                        y: 30
+                    },
+                }).showToast();
             }
         });
     })
@@ -115,7 +159,6 @@ $(document).ready(function () {
         let list = $(this).closest('.list');
         let span = list.find('span')
         let rowId = list.attr('id').split('_')[1]
-        console.log(rowId)
         if (!rowId) return
         if (span.find('img').length > 0) {
             return;
@@ -155,9 +198,9 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr, status, err) {
-                console.error(status, err)
+                console.error(xhr, status, err)
                 Toastify({
-                    text: "Error while updaing",
+                    text: "Something went wrong",
                     duration: 3000,
                     stopOnFocus: true,
                     position: "right",

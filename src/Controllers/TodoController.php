@@ -104,8 +104,14 @@ class TodoController
             if (isset($data['color'])) {
                 $todo->color = $data['color'];
             }
-            if (isset($data['item_position'])) {
-                $todo->item_position = $data['item_position'];
+            if (isset($data['item_positions'])) {
+                foreach ($data['item_positions'] as $item_pos) {
+                    $item = Todo::find($item_pos['id']);
+                    if ($item) {
+                        $todo->item_position = $item_pos['item_positions'];
+                        $item->save();
+                    }
+                }
             }
             if (isset($data['is_done'])) {
                 $todo->is_done = $data['is_done'];
@@ -128,6 +134,31 @@ class TodoController
         }
     }
 
+    public function updateposition(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+        if (isset($data['item_positions'])) {
+            foreach ($data['item_positions'] as $item_pos) {
+                $todo = Todo::find($item_pos['id']);
+                if ($todo) {
+                    $todo->item_position = $item_pos['position'];
+                    $todo->save();
+                }
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Todos updated successfully.'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'No item positions provided.'
+            ]));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+    }
 
     public function delete(Request $request, Response $response, $args)
     {
