@@ -12,7 +12,15 @@ input { outline: 0; }
 body { font: 14px/1.1 Helvetica, Sans-Serif; background: url(/images/stripe.png) repeat-x; }
 #page-wrap { width: 960px; margin: 6px auto 50px; position: relative; }
 hr { height: 1px; background: #ccc; clear: both; margin: 20px 0; border: none; display: block; }
+/*
+    OVERLAY
+*/
+#overlay {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.5); display: none; z-index: 999; }
 
+/*
+    LOADER
+*/
+#loader {position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;}
 
 /*
     TYPOGRAPHY

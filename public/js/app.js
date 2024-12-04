@@ -1,9 +1,12 @@
 $(document).ready(function () {
-    
+
     $("#list").sortable({
         axis: 'y',
         revert: true,
         update: function (e, ui) {
+
+            $('#overlay').show();
+            $('#loader').show();
 
             var data = $(this).sortable('toArray', {
                 attribute: 'id'
@@ -54,6 +57,9 @@ $(document).ready(function () {
                             },
                         }).showToast();
                     }
+                    $('#loader').hide();
+                    $('#overlay').hide();
+
                 }, error: function (x, s, e) {
                     console.error(x, s, e)
                     Toastify({
@@ -69,6 +75,8 @@ $(document).ready(function () {
                             y: 30
                         },
                     }).showToast();
+                    $('#loader').hide();
+                    $('#overlay').hide();
                 }
             });
         }
@@ -76,7 +84,7 @@ $(document).ready(function () {
 
     $('#add-new').submit(function (e) {
         e.preventDefault()
-        $('#add-new-submit').attr('disabled', true).html($('#loader').show())
+        $('#add-new-submit').attr('disabled', true)
         var description = $('#description').val().trim()
         if (description === "") {
             Toastify({
@@ -92,9 +100,11 @@ $(document).ready(function () {
                     y: 30
                 },
             }).showToast();
-            $('#add-new-submit').attr('disabled', false).html('Add')
+            $('#add-new-submit').attr('disabled', false)
             return;
         }
+        $('#overlay').show();
+        $('#loader').show();
 
         let formData = { description: description }
         $.ajax({
@@ -131,7 +141,7 @@ $(document).ready(function () {
                     )
 
                     $('#add-new')[0].reset()
-                    $('#add-new-submit').html('Add').attr('disabled', false)
+                    $('#add-new-submit').attr('disabled', false)
                 } else if (!response.success) {
                     Toastify({
                         text: response.message,
@@ -147,10 +157,12 @@ $(document).ready(function () {
                         },
                     }).showToast();
                 }
+                $('#overlay').hide();
+                $('#loader').hide();
             },
             error: function (x, s, e) {
                 console.error(x, s, e)
-                $('#add-new-submit').attr('disabled', false).html('Add')
+                $('#add-new-submit').attr('disabled', false)
                 Toastify({
                     text: "Something went wrong",
                     duration: 3000,
@@ -164,6 +176,8 @@ $(document).ready(function () {
                         y: 30
                     },
                 }).showToast();
+                $('#overlay').hide();
+                $('#loader').hide();
             }
         });
     })
@@ -176,6 +190,8 @@ $(document).ready(function () {
         if (span.find('img').length > 0) {
             return;
         }
+        $('#overlay').show();
+        $('#loader').show();
 
         $.ajax({
             method: 'PUT',
@@ -220,6 +236,8 @@ $(document).ready(function () {
                         },
                     }).showToast();
                 }
+                $('#overlay').hide();
+                $('#loader').hide();
             },
             error: function (xhr, status, err) {
                 console.error(xhr, status, err)
@@ -273,9 +291,9 @@ $(document).ready(function () {
         }
         let inputVal = row.find('.editDescription').val()
         row.find('span').html(inputVal)
-        $(this).attr('disabled', true).html(
-            $('#loader').show()
-        );
+        $('#overlay').show();
+        $('#loader').show();
+        $(this).attr('disabled', true)
 
         $.ajax({
             method: 'PUT',
@@ -301,6 +319,7 @@ $(document).ready(function () {
                     $(this).attr('disabled', false).html(
                         `<button class="saveBtn">Save</button>`
                     );
+
                 } else if (!res.success) {
                     Toastify({
                         text: res.message,
@@ -319,6 +338,8 @@ $(document).ready(function () {
                         `<button class="saveBtn">Save</button>`
                     );
                 }
+                $('#overlay').hide();
+                $('#loader').hide();
             },
             error: function (xhr, status, err) {
                 console.error(status, err)
@@ -333,6 +354,8 @@ $(document).ready(function () {
                     },
                     offset: { y: 30 },
                 }).showToast();
+                $('#overlay').hide();
+                $('#loader').hide();
             }
         })
     })
@@ -354,6 +377,8 @@ $(document).ready(function () {
             })
 
             colorPicker.on('change', function () {
+                $('#overlay').show();
+                $('#loader').show();
                 $.ajax({
                     method: 'PUT',
                     url: 'http://localhost:8080/todos/' + rowId,
@@ -393,6 +418,8 @@ $(document).ready(function () {
                                 },
                             }).showToast();
                         }
+                        $('#overlay').hide();
+                        $('#loader').hide();
                     },
                     error: function (xhr, status, err) {
                         console.error(status, err)
@@ -407,6 +434,8 @@ $(document).ready(function () {
                             },
                             offset: { y: 30 },
                         }).showToast();
+                        $('#overlay').hide();
+                        $('#loader').hide();
                     }
                 })
             });
@@ -417,7 +446,8 @@ $(document).ready(function () {
         let list = $(this).closest('.list');
         let rowId = list.attr('id').split('_')[1]
         if (!rowId) return
-        $('#loader').show()
+        $('#overlay').show();
+        $('#loader').show();
         $.ajax({
             method: 'DELETE',
             url: 'http://localhost:8080/todos/' + rowId,
@@ -455,6 +485,8 @@ $(document).ready(function () {
                     }).showToast();
                     $('#loader').hide()
                 }
+                $('#overlay').hide();
+                $('#loader').hide();
             },
             error: function (xhr, status, err) {
                 console.error(status, err)
@@ -469,6 +501,8 @@ $(document).ready(function () {
                     },
                     offset: { y: 30 },
                 }).showToast();
+                $('#overlay').hide();
+                $('#loader').hide();
             }
         })
     });
