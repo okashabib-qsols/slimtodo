@@ -62,13 +62,6 @@ class TodoController
     public function store(Request $request, Response $response, $args)
     {
         $form_data = $request->getParsedBody();
-        if (!isset($form_data['description']) || trim($form_data['description']) === "") {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Description is required.'
-            ]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
 
         $item_position = Todo::max('item_position');
         $position = $item_position + 1;

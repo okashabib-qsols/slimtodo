@@ -32,7 +32,7 @@ p { margin: 0 0 6px 0; }
 */
 #header { height: 68px; position: relative; }
 #header h1 { position: absolute; top: 0; left: 0; z-index: 2; text-indent: -9999px; overflow: hidden; }
-#header h1 a { display: block; text-indent: -9999px; width: 200px; height: 38px; border: none; background: url(/images/logo.png) no-repeat; }
+#header h1 a { display: block; text-indent: -9999px; width: 200px; height: 38px; border: none; }
 #control { width: 500px; float: right; padding: 10px 237px 0 0; text-align: right; }
 
 

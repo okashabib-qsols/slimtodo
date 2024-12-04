@@ -1,12 +1,9 @@
 $(document).ready(function () {
-
-    // $('#loader').show()
-
+    
     $("#list").sortable({
         axis: 'y',
         revert: true,
         update: function (e, ui) {
-            console.log($(e.target), ui.items)
 
             var data = $(this).sortable('toArray', {
                 attribute: 'id'
@@ -19,7 +16,6 @@ $(document).ready(function () {
                     position: index + 1
                 };
             });
-            console.log(itemPositions)
 
             $.ajax({
                 method: "PUT",
@@ -30,7 +26,6 @@ $(document).ready(function () {
                     item_positions: itemPositions
                 }),
                 success: function (response) {
-                    console.log(response)
                     if (response.success) {
                         Toastify({
                             text: response.message,
@@ -59,8 +54,8 @@ $(document).ready(function () {
                             },
                         }).showToast();
                     }
-                },error: function (x,s,e){
-                    console.error(x,s,e)
+                }, error: function (x, s, e) {
+                    console.error(x, s, e)
                     Toastify({
                         text: "Something went wrong",
                         duration: 3000,
@@ -82,12 +77,30 @@ $(document).ready(function () {
     $('#add-new').submit(function (e) {
         e.preventDefault()
         $('#add-new-submit').attr('disabled', true).html($('#loader').show())
-        var description = $('#description').val()
+        var description = $('#description').val().trim()
+        if (description === "") {
+            Toastify({
+                text: "Description is required.",
+                duration: 3000,
+                stopOnFocus: true,
+                position: "right",
+                style: {
+                    background: "red",
+                    borderRadius: "10px",
+                },
+                offset: {
+                    y: 30
+                },
+            }).showToast();
+            $('#add-new-submit').attr('disabled', false).html('Add')
+            return;
+        }
+
         let formData = { description: description }
         $.ajax({
             method: "POST",
-            url: "http://localhost:8081/todos",
             contentType: 'application/json',
+            url: "http://localhost:8080/todos",
             data: JSON.stringify(formData),
             success: (response) => {
                 if (response.success) {
@@ -107,7 +120,7 @@ $(document).ready(function () {
                     let rel = $('#list .list').length
                     $('#list').append(
                         `
-                        <li color="1" class="colorBlue list" rel=${rel} id=${response.data.id}>
+                        <li color="1" class="colorBlue list" rel=${rel} id="todo_${response.data.id}">
                             <span id="${response.data.id}listitem" title="Double-click to edit...">${response.data.description}</span>
                             <div class="draggertab tab"></div>
                             <div class="colortab tab"></div>
@@ -118,7 +131,7 @@ $(document).ready(function () {
                     )
 
                     $('#add-new')[0].reset()
-                    $('#add-new-submit').attr('disabled', false).html('Add')
+                    $('#add-new-submit').html('Add').attr('disabled', false)
                 } else if (!response.success) {
                     Toastify({
                         text: response.message,
@@ -136,7 +149,7 @@ $(document).ready(function () {
                 }
             },
             error: function (x, s, e) {
-                console.log(x, s, e)
+                console.error(x, s, e)
                 $('#add-new-submit').attr('disabled', false).html('Add')
                 Toastify({
                     text: "Something went wrong",
@@ -166,12 +179,11 @@ $(document).ready(function () {
 
         $.ajax({
             method: 'PUT',
-            url: 'http://localhost:8081/todos/' + rowId,
+            url: 'http://localhost:8080/todos/' + rowId,
             data: {
                 is_done: 1
             },
             success: function (res) {
-                console.log(res)
                 if (res.success) {
                     list.css({
                         opacity: '0.5'
@@ -181,6 +193,18 @@ $(document).ready(function () {
                             <img src="/images/crossout.png" class="crossout" style="width: 100%; display: block;" />
                         `
                     )
+                    Toastify({
+                        text: "Marked as Done!",
+                        duration: 3000,
+                        stopOnFocus: true,
+                        position: "right",
+                        style: {
+                            borderRadius: "10px",
+                        },
+                        offset: {
+                            y: 30
+                        },
+                    }).showToast();
                 } else if (!res.success) {
                     Toastify({
                         text: res.message,
@@ -255,13 +279,12 @@ $(document).ready(function () {
 
         $.ajax({
             method: 'PUT',
-            url: 'http://localhost:8081/todos/' + rowId,
+            url: 'http://localhost:8080/todos/' + rowId,
             data: {
                 description: inputVal
             },
             dataType: 'json',
             success: function (res) {
-                console.log(res)
                 if (res.success) {
                     Toastify({
                         text: res.message,
@@ -325,7 +348,6 @@ $(document).ready(function () {
 
             colorPicker.on('input', function () {
                 colorVal = $(this).val()
-                console.log(colorVal)
                 $(this).closest('li').find('span').css({
                     background: colorVal
                 })
@@ -334,13 +356,12 @@ $(document).ready(function () {
             colorPicker.on('change', function () {
                 $.ajax({
                     method: 'PUT',
-                    url: 'http://localhost:8081/todos/' + rowId,
+                    url: 'http://localhost:8080/todos/' + rowId,
                     data: {
                         color: colorVal
                     },
                     dataType: 'json',
                     success: function (res) {
-                        console.log(res)
                         if (res.success) {
                             Toastify({
                                 text: res.message,
@@ -399,7 +420,7 @@ $(document).ready(function () {
         $('#loader').show()
         $.ajax({
             method: 'DELETE',
-            url: 'http://localhost:8081/todos/' + rowId,
+            url: 'http://localhost:8080/todos/' + rowId,
             dataType: 'json',
             success: function (res) {
                 if (res.success) {
