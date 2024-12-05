@@ -127,10 +127,9 @@ $(document).ready(function () {
                         },
                     }).showToast();
 
-                    let rel = $('#list .list').length
                     $('#list').append(
                         `
-                        <li color="1" class="colorBlue list" rel=${rel} id="todo_${response.data.id}">
+                        <li color="1" class="colorBlue list" id="todo_${response.data.id}">
                             <span id="${response.data.id}listitem" title="Double-click to edit...">${response.data.description}</span>
                             <div class="draggertab tab"></div>
                             <div class="colortab tab"></div>
@@ -206,7 +205,7 @@ $(document).ready(function () {
                     })
                     span.append(
                         `
-                            <img src="/images/crossout.png" class="crossout" style="width: 100%; display: block;" />
+                            <img src="/images/crossout.png" class="crossout" />
                         `
                     )
                     Toastify({

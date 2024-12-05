@@ -1,8 +1,8 @@
 <?php
 namespace App\Controllers;
 
-use Psr\Container\ContainerInterface;
 use App\Models\Todo;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -19,7 +19,7 @@ class TodoController
     public function index(Request $request, Response $response)
     {
         $todo = Todo::orderBy('item_position')->get();
-        if ($todo) {
+        if (!$todo->isEmpty()) {
             return $this->view->render($response, 'todo.html.twig', [
                 'success' => true,
                 'message' => 'Got resource successfully',
@@ -28,7 +28,10 @@ class TodoController
         } else {
             $response
                 ->getBody()
-                ->write(json_encode(['success', false, 'message' => 'Data not found']));
+                ->write(json_encode([
+                    'success' => false,
+                    'message' => 'Data not found'
+                ]));
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
@@ -39,20 +42,30 @@ class TodoController
     {
         $id = $args['id'];
         if (!is_numeric($id)) {
-            $response->getBody()->write(json_encode(['success' => false, 'message' => "id must be number `$id is given` "]));
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => "id must be number `$id is given` "
+            ]));
             return $response
-                ->withStatus(405)
+                ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         }
         $todo = Todo::find($id);
         if ($todo) {
             $todo = $response->getBody()
-                ->write(json_encode(['success', true, 'message' => 'Got resource successfully', 'data' => $todo]));
+                ->write(json_encode([
+                    'success' => true,
+                    'message' => 'Got resource successfully',
+                    'data' => $todo
+                ]));
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json');
         } else {
-            $response->getBody()->write(json_encode(['success' => false, 'message' => 'Todo not found']));
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Todo not found'
+            ]));
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
@@ -72,7 +85,11 @@ class TodoController
             'color' => 1
         ]);
 
-        $response->getBody()->write(json_encode(['success' => true, 'message' => 'Todo added', 'data' => $todo]));
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'message' => 'Todo added',
+            'data' => $todo
+        ]));
         return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
@@ -82,7 +99,10 @@ class TodoController
         if (!is_numeric($id)) {
             $response
                 ->getBody()
-                ->write(json_encode(['success' => false, 'message' => "id must be number `$id is given` "]));
+                ->write(json_encode([
+                    'success' => false,
+                    'message' => "id must be number `$id is given` "
+                ]));
             return $response
                 ->withStatus(405)
                 ->withHeader('Content-Type', 'application/json');
@@ -96,15 +116,6 @@ class TodoController
             }
             if (isset($data['color'])) {
                 $todo->color = $data['color'];
-            }
-            if (isset($data['item_positions'])) {
-                foreach ($data['item_positions'] as $item_pos) {
-                    $item = Todo::find($item_pos['id']);
-                    if ($item) {
-                        $todo->item_position = $item_pos['item_positions'];
-                        $item->save();
-                    }
-                }
             }
             if (isset($data['is_done'])) {
                 $todo->is_done = $data['is_done'];
@@ -169,13 +180,19 @@ class TodoController
         if ($todo) {
             $todo->delete();
             $response->getBody()
-                ->write(json_encode(['success' => true, 'message' => 'Deleted successfully']));
+                ->write(json_encode([
+                    'success' => true,
+                    'message' => 'Deleted successfully'
+                ]));
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json');
         } else {
             $response->getBody()
-                ->write(json_encode(['success' => false, 'message' => "Todo not found with provided id $id"]));
+                ->write(json_encode([
+                    'success' => false,
+                    'message' => "Todo not found with provided id $id"
+                ]));
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');

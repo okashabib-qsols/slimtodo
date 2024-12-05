@@ -15,25 +15,26 @@ hr { height: 1px; background: #ccc; clear: both; margin: 20px 0; border: none; d
 /*
     OVERLAY
 */
-#overlay {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.5); display: none; z-index: 999; }
+#overlay {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.5);display: none;z-index: 999;}
 
-/*
-    LOADER
-*/
-#loader {position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;}
+/* Loader Styles */
+#loader {display: none;position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);text-align: center;z-index: 1000;}
 
-/*
-    TYPOGRAPHY
+#loader span { display: block;margin-top: 10px; color: white; }
+
+.crossout{width: 100%;}
+/*    
+TYPOGRAPHY
 */
 a  { text-decoration: none; color: #900; border-bottom: 1px dotted #900; outline: none; }
-h1 { font: bold 36px Helvetica, Sans-Serif; margin: 0 0 8px 0; }
+h1 { font: bold 36px Helvetica, Sans-Serif; margin: 0 0 8px 0; color: burlywood; }
 h2 { margin: 0 0 10px 0; }
 p { margin: 0 0 6px 0; }
 .button { background: url(/images/button-bg.png) repeat-x; -moz-border-radius: 5px; padding: 6px 12px; border: none; color: white; cursor: pointer; text-shadow: 0 1px 1px #666; -webkit-border-radius: 5px; -webkit-box-shadow: 0 1px 3px #999; font: bold 16px Helvetica; }
 .button:hover { background-position: bottom left; }
 .red { background: red; color: white; font-size: 12px; padding: 3px; }
  
- 
+button {border: none;}
  
 /*
     HEADER

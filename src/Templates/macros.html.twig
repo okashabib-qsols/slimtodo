@@ -1,0 +1,14 @@
+{% macro todoItem(todo) %}
+    <li color={{todo.color}} class="{{todo.color == 1 ? 'colorBlue' : todo.color}} list" id="todo_{{todo.id}}" style="{{todo.is_done == 1 ? "opacity: 0.5;" : ""}}">
+        <span id="{{todo.id}}listitem" title="Double-click to edit..." style="background-color: {{todo.color != 1 ? todo.color : " "}}">
+            {{ todo.description|e }}
+            {% if todo.is_done == 1 %}
+                <img src="/images/crossout.png" class="crossout" alt="Completed"/>
+            {% endif %}
+        </span>
+        <button class="draggertab tab" aria-label="Drag Todo"></button>
+        <button class="colortab tab" aria-label="Change Color"></button>
+        <button class="deletetab tab" aria-label="Delete Todo"></button>
+        <button class="donetab tab" aria-label="Mark as Done"></button>
+    </li>
+{% endmacro %}
