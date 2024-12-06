@@ -4,7 +4,9 @@
         "slim/psr7": "^1.7",
         "illuminate/database": "^11.34",
         "php-di/php-di": "^7.0",
-        "slim/twig-view": "^3.4"
+        "slim/twig-view": "^3.4",
+        "slim/csrf": "^1.5",
+        "monolog/monolog": "^3.8"
     },
     "autoload": {
         "psr-4": {

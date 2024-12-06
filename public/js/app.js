@@ -23,6 +23,10 @@ $(document).ready(function () {
             $.ajax({
                 method: "PUT",
                 url: "http://localhost:8080/todos",
+                headers: {
+                    'csrf_name': $('#csrf_name').val(),
+                    'csrf_value': $('#csrf_value').val()
+                },
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify({
@@ -84,6 +88,8 @@ $(document).ready(function () {
 
     $('#add-new').submit(function (e) {
         e.preventDefault()
+        console.log($(this).serializeArray())
+
         $('#add-new-submit').attr('disabled', true)
         var description = $('#description').val().trim()
         if (description === "") {
@@ -109,6 +115,10 @@ $(document).ready(function () {
         let formData = { description: description }
         $.ajax({
             method: "POST",
+            headers: {
+                'csrf_name': $('#csrf_name').val(),
+                'csrf_value': $('#csrf_value').val()
+            },
             contentType: 'application/json',
             url: "http://localhost:8080/todos",
             data: JSON.stringify(formData),
@@ -195,6 +205,10 @@ $(document).ready(function () {
         $.ajax({
             method: 'PUT',
             url: 'http://localhost:8080/todos/' + rowId,
+            headers: {
+                'csrf_name': $('#csrf_name').val(),
+                'csrf_value': $('#csrf_value').val()
+            },
             data: {
                 is_done: 1
             },
@@ -253,6 +267,8 @@ $(document).ready(function () {
                         y: 30
                     },
                 }).showToast();
+                $('#overlay').hide();
+                $('#loader').hide();
             }
         })
     })
@@ -297,6 +313,10 @@ $(document).ready(function () {
         $.ajax({
             method: 'PUT',
             url: 'http://localhost:8080/todos/' + rowId,
+            headers: {
+                'csrf_name': $('#csrf_name').val(),
+                'csrf_value': $('#csrf_value').val()
+            },
             data: {
                 description: inputVal
             },
@@ -381,6 +401,10 @@ $(document).ready(function () {
                 $.ajax({
                     method: 'PUT',
                     url: 'http://localhost:8080/todos/' + rowId,
+                    headers: {
+                        'csrf_name': $('#csrf_name').val(),
+                        'csrf_value': $('#csrf_value').val()
+                    },
                     data: {
                         color: colorVal
                     },
@@ -450,6 +474,10 @@ $(document).ready(function () {
         $.ajax({
             method: 'DELETE',
             url: 'http://localhost:8080/todos/' + rowId,
+            headers: {
+                'csrf_name': $('#csrf_name').val(),
+                'csrf_value': $('#csrf_value').val()
+            },
             dataType: 'json',
             success: function (res) {
                 if (res.success) {

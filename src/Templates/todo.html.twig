@@ -24,10 +24,10 @@
 			</div>
 
 			<div id="main">
-			{% import 'macros.html.twig' as macros %}
+				{% import 'list.html.twig' as list %}
 				<ul id="list" class="ui-sortable">
 					{% for todo in data %}
-						{{ macros.todoItem(todo) }}
+						{{ list.todo_item(todo) }}
 					{% else %}
 						<li class="bad">
 							No data available
@@ -37,12 +37,12 @@
 				<br/>
 
 				<form id="add-new" method="post">
-					<input type="text" id="description" name="description"/>
-					<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+					<input type="hidden" id="csrf_name" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+					<input type="hidden" id="csrf_value" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+					<input type="text" id="description" placeholder="New Todo" name="description"/>
 					<button type="submit" id="add-new-submit" class="button">Add</button>
 				</form>
 
-				<div class="clear"></div>
 			</div>
 		</div>
 		<noscript>This site just doesn't work, period, without JavaScript</noscript>

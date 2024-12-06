@@ -5,25 +5,43 @@ use App\Models\Todo;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
 class TodoController
 {
     protected $container;
     protected $view;
+    protected $csrf;
+    protected $logger;
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->view = $container->get("view");
+        $this->csrf = $container->get("csrf");
+        $this->logger = $container->get("logger");
     }
 
     public function index(Request $request, Response $response)
     {
+        $this->logger->info("Fetching Todos");
+        $csrfNameKey = $this->csrf->getTokenNameKey();
+        $csrfValueKey = $this->csrf->getTokenValueKey();
+        $csrfName = $this->csrf->getTokenName();
+        $csrfValue = $this->csrf->getTokenValue();
+
         $todo = Todo::orderBy('item_position')->get();
         if (!$todo->isEmpty()) {
+            $this->logger->info('SuccessFully fetched Todos');
             return $this->view->render($response, 'todo.html.twig', [
                 'success' => true,
                 'message' => 'Got resource successfully',
-                'data' => $todo
+                'data' => $todo,
+                'csrf' => [
+                    'keys' => [
+                        'name' => $csrfNameKey,
+                        'value' => $csrfValueKey
+                    ],
+                    'name' => $csrfName,
+                    'value' => $csrfValue
+                ]
             ]);
         } else {
             $response
@@ -32,8 +50,8 @@ class TodoController
                     'success' => false,
                     'message' => 'Data not found'
                 ]));
+            $this->logger->error("Error while fetching todos");
             return $response
-                ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
         }
     }
@@ -90,7 +108,9 @@ class TodoController
             'message' => 'Todo added',
             'data' => $todo
         ]));
-        return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+        return $response
+            ->withStatus(201)
+            ->withHeader('Content-Type', 'application/json');
     }
 
     public function update(Request $request, Response $response, $args)
@@ -104,7 +124,7 @@ class TodoController
                     'message' => "id must be number `$id is given` "
                 ]));
             return $response
-                ->withStatus(405)
+                ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         }
         $todo = Todo::find($id);
@@ -128,17 +148,21 @@ class TodoController
                 'message' => 'Todo updated successfully.',
                 'data' => $todo
             ]));
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
         } else {
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Todo not found.'
             ]));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            return $response
+                ->withStatus(404)
+                ->withHeader('Content-Type', 'application/json');
         }
     }
 
-    public function updateposition(Request $request, Response $response)
+    public function update_position(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
         if (isset($data['item_positions'])) {
@@ -154,13 +178,15 @@ class TodoController
                 'success' => true,
                 'message' => 'Todos updated successfully.'
             ]));
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
         } else {
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'No item positions provided.'
             ]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json');
         }
     }
 
@@ -172,7 +198,7 @@ class TodoController
                 ->getBody()
                 ->write(json_encode(['success' => false, 'message' => "id must be number `$id is given` "]));
             return $response
-                ->withStatus(405)
+                ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         }
         $todo = Todo::find($id);
