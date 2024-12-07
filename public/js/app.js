@@ -3,6 +3,7 @@ $(document).ready(function () {
     $("#list").sortable({
         axis: 'y',
         revert: true,
+        cursor: "move",
         update: function (e, ui) {
 
             $('#overlay').show();
@@ -30,13 +31,13 @@ $(document).ready(function () {
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify({
-                    item_positions: itemPositions
+                    position: itemPositions
                 }),
                 success: function (response) {
                     console.log(response)
-                    if (response.success) {
+                    if (response?.success) {
                         Toastify({
-                            text: response.message,
+                            text: response?.message,
                             duration: 3000,
                             stopOnFocus: true,
                             position: "right",
@@ -47,11 +48,11 @@ $(document).ready(function () {
                                 y: 30
                             },
                         }).showToast();
-                        $('#csrf_name').val(response.csrf.name);
-                        $('#csrf_value').val(response.csrf.value);
-                    } else if (!response.success) {
+                        $('#csrf_name').val(response?.csrf?.name);
+                        $('#csrf_value').val(response?.csrf?.value);
+                    } else if (!response?.success) {
                         Toastify({
-                            text: response.message,
+                            text: response?.message,
                             duration: 3000,
                             stopOnFocus: true,
                             position: "right",
@@ -91,27 +92,10 @@ $(document).ready(function () {
 
     $('#add-new').submit(function (e) {
         e.preventDefault()
-        console.log($(this).serializeArray())
 
         $('#add-new-submit').attr('disabled', true)
         var description = $('#description').val().trim()
-        if (description === "") {
-            Toastify({
-                text: "Description is required.",
-                duration: 3000,
-                stopOnFocus: true,
-                position: "right",
-                style: {
-                    background: "red",
-                    borderRadius: "10px",
-                },
-                offset: {
-                    y: 30
-                },
-            }).showToast();
-            $('#add-new-submit').attr('disabled', false)
-            return;
-        }
+
         $('#overlay').show();
         $('#loader').show();
 
@@ -126,10 +110,9 @@ $(document).ready(function () {
             url: "http://localhost:8080/todos",
             data: JSON.stringify(formData),
             success: (response) => {
-                console.log(response)
-                if (response.success) {
+                if (response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -143,24 +126,24 @@ $(document).ready(function () {
 
                     $('#list').append(
                         `
-                        <li color="1" class="color-blue list" id="todo_${response.data.id}">
-                            <span id="${response.data.id}listitem" title="Double-click to edit...">${response.data.description}</span>
-                            <div class="draggertab tab"></div>
-                            <div class="colortab tab"></div>
-                            <div class="deletetab tab" title="Double click to delete"></div>
-                            <div class="donetab tab"></div>
+                        <li color="1" class="color-blue list" id="todo_${response?.data?.id}">
+                            <span id="${response?.data?.id}listitem" title="Double-click to edit...">${response?.data?.description}</span>
+                            <button class="draggertab tab" aria-label="Drag Todo"></button>
+                            <button class="colortab tab" aria-label="Change Color"></button>
+                            <button class="deletetab tab" aria-label="Delete Todo"></div>
+                            <button class="donetab tab" aria-label="Mark as Done"></button>
                         </li>
                         `
                     )
 
-                    $('#csrf_name').val(response.csrf.name);
-                    $('#csrf_value').val(response.csrf.value);
+                    $('#csrf_name').val(response?.csrf?.name);
+                    $('#csrf_value').val(response?.csrf?.value);
 
                     $('#add-new')[0].reset()
                     $('#add-new-submit').attr('disabled', false)
-                } else if (!response.success) {
+                } else if (!response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -175,12 +158,13 @@ $(document).ready(function () {
                 }
                 $('#overlay').hide();
                 $('#loader').hide();
+                $('#add-new-submit').attr('disabled', false)
             },
             error: function (x, s, e) {
                 console.error(x, s, e)
                 $('#add-new-submit').attr('disabled', false)
                 Toastify({
-                    text: "Something went wrong",
+                    text: x?.responseJSON?.message || "Something went wrong",
                     duration: 3000,
                     stopOnFocus: true,
                     position: "right",
@@ -194,6 +178,9 @@ $(document).ready(function () {
                 }).showToast();
                 $('#overlay').hide();
                 $('#loader').hide();
+                $('#add-new-submit').attr('disabled', false)
+                $('#csrf_name').val(x?.responseJSON?.csrf?.name);
+                $('#csrf_value').val(x?.responseJSON?.csrf?.value);
             }
         });
     })
@@ -220,7 +207,7 @@ $(document).ready(function () {
                 is_done: 1
             },
             success: function (response) {
-                if (response.success) {
+                if (response?.success) {
                     list.addClass('completed')
 
                     span.append(
@@ -240,11 +227,11 @@ $(document).ready(function () {
                             y: 30
                         },
                     }).showToast();
-                    $('#csrf_name').val(response.csrf.name);
-                    $('#csrf_value').val(response.csrf.value);
-                } else if (!response.success) {
+                    $('#csrf_name').val(response?.csrf?.name);
+                    $('#csrf_value').val(response?.csrf?.value);
+                } else if (!response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -330,9 +317,9 @@ $(document).ready(function () {
             },
             dataType: 'json',
             success: function (response) {
-                if (response.success) {
+                if (response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -346,11 +333,11 @@ $(document).ready(function () {
                     $(this).attr('disabled', false).html(
                         `<button class="saveBtn">Save</button>`
                     );
-                    $('#csrf_name').val(response.csrf.name);
-                    $('#csrf_value').val(response.csrf.value);
-                } else if (!response.success) {
+                    $('#csrf_name').val(response?.csrf?.name);
+                    $('#csrf_value').val(response?.csrf?.value);
+                } else if (!response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -419,9 +406,9 @@ $(document).ready(function () {
                     },
                     dataType: 'json',
                     success: function (response) {
-                        if (response.success) {
+                        if (response?.success) {
                             Toastify({
-                                text: response.message,
+                                text: response?.message,
                                 duration: 3000,
                                 stopOnFocus: true,
                                 position: "right",
@@ -434,12 +421,12 @@ $(document).ready(function () {
                             }).showToast();
 
                             $('.colorpicker').remove();
-                            $('#csrf_name').val(response.csrf.name);
-                            $('#csrf_value').val(response.csrf.value);
+                            $('#csrf_name').val(response?.csrf?.name);
+                            $('#csrf_value').val(response?.csrf?.value);
 
-                        } else if (!response.success) {
+                        } else if (!response?.success) {
                             Toastify({
-                                text: response.message,
+                                text: response?.message,
                                 duration: 3000,
                                 stopOnFocus: true,
                                 position: "right",
@@ -491,9 +478,9 @@ $(document).ready(function () {
             },
             dataType: 'json',
             success: function (response) {
-                if (response.success) {
+                if (response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -507,11 +494,11 @@ $(document).ready(function () {
 
                     $('#loader').hide()
                     list.remove();
-                    $('#csrf_name').val(response.csrf.name);
-                    $('#csrf_value').val(response.csrf.value);
-                } else if (!response.success) {
+                    $('#csrf_name').val(response?.csrf?.name);
+                    $('#csrf_value').val(response?.csrf?.value);
+                } else if (!response?.success) {
                     Toastify({
-                        text: response.message,
+                        text: response?.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",

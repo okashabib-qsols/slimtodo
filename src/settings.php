@@ -18,6 +18,4 @@ return function () {
 
     $capsule->setAsGlobal();
     $capsule->bootEloquent();
-
-    return ['db' => $env];
 };

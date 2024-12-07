@@ -101,3 +101,14 @@ ul#list li span input[style] { width: 90% !important; }
 .editDescription{ border-radius: 10px; padding: 1px; font-size: 6px; display: flex;}
 .saveBtn {padding: 3px; border-radius: 5px; border: none; margin-top: 3px; cursor: pointer; transition: all 250ms;}
 .saveBtn:hover{border: 1px solid green; margin-left: 5px;}
+
+.pagination {text-align: center; margin-top: 20px;}
+.pagination ul {display: inline-block;padding: 0;list-style: none;}
+.pagination ul li {display: inline; margin: 0 5px; }
+.pagination ul li a {text-decoration: none;padding: 5px 10px;border: 1px solid #ccc;color: #333; border-radius: 5px; transition: all 250ms;}
+.pagination ul li.active a {background-color: #007bff;color: #fff; border-radius: 20px;}
+.pagination ul li a:hover{transition: all 250ms; background-color: #2e93ff; color: white;}
+.pagination ul li.disabled span {color: #ccc;}
+.next-page{border-radius: 5px 10px 10px 5px;}
+.prev-page{border-radius: 10px 5px 5px 10px;}
+.pagination ul li.active a:hover{background-color: #007bff;}

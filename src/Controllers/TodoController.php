@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Models\Todo;
+use Illuminate\Pagination\Paginator;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -43,25 +44,35 @@ class TodoController
         try {
             $this->logger->info("Fetching Todos");
 
-            $todo = Todo::orderBy('item_position')->get();
-            if (!$todo->isEmpty()) {
-                $this->logger->info('SuccessFully fetched Todos');
+            Paginator::currentPageResolver(function () use ($request) {
+                return (int) ($request->getQueryParams()['page'] ?? 1);
+            });
+
+            $todos = Todo::orderBy('item_position')->paginate(10);
+
+            if (!$todos->isEmpty()) {
+                $this->logger->info('Successfully fetched Todos');
+
                 return $this->view->render($response, 'todo.html.twig', array_merge(
                     [
                         'success' => true,
                         'message' => 'Got resource successfully',
-                        'data' => $todo,
+                        'data' => $todos,
+                        'pagination' => [
+                            'currentPage' => $todos->currentPage(),
+                            'lastPage' => $todos->lastPage(),
+                            'nextPageUrl' => $todos->nextPageUrl(),
+                            'previousPageUrl' => $todos->previousPageUrl(),
+                        ],
                         'title' => "Todo App"
                     ],
                     $this->getCsrfTokens()
                 ));
             } else {
-                $response
-                    ->getBody()
-                    ->write(json_encode([
-                        'success' => false,
-                        'message' => 'Data not found'
-                    ]));
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Data not found'
+                ]));
                 $this->logger->error("Error while fetching todos");
                 return $response
                     ->withHeader('Content-Type', 'application/json');
@@ -129,6 +140,17 @@ class TodoController
     {
         try {
             $form_data = $request->getParsedBody();
+            if (trim($form_data['description']) == "") {
+                $response->getBody()->write(json_encode(array_merge(
+                    [
+                        'success' => false,
+                        'message' => 'Description is required',
+                    ],
+                    $this->getCsrfTokens()
+                )));
+                $this->logger->warning('Description is required');
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            }
 
             $item_position = Todo::max('item_position');
             $position = $item_position + 1;
@@ -147,7 +169,7 @@ class TodoController
                 ],
                 $this->getCsrfTokens()
             )));
-            $this->logger->info("Successfully added todo");
+            $this->logger->info("Successfully added todo", ['todo' => $todo]);
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
@@ -201,6 +223,7 @@ class TodoController
                     ],
                     $this->getCsrfTokens()
                 )));
+                $this->logger->info("Updated todo with id: $id", ['data' => $data]);
                 return $response
                     ->withStatus(200)
                     ->withHeader('Content-Type', 'application/json');
@@ -209,6 +232,7 @@ class TodoController
                     'success' => false,
                     'message' => 'Todo not found.'
                 ]));
+                $this->logger->error("Todo not found with id: $id");
                 return $response
                     ->withStatus(404)
                     ->withHeader('Content-Type', 'application/json');
@@ -227,12 +251,17 @@ class TodoController
     {
         try {
             $data = $request->getParsedBody();
-            if (isset($data['item_positions'])) {
-                foreach ($data['item_positions'] as $item_pos) {
+            $this->logger->info("Received request to update positions.", ['data' => $data]);
+            if (isset($data['position'])) {
+                foreach ($data['position'] as $item_pos) {
+                    $this->logger->info("Updating position for Todo ID: {$item_pos['id']}", ['new_position' => $item_pos['position']]);
                     $todo = Todo::find($item_pos['id']);
                     if ($todo) {
                         $todo->item_position = $item_pos['position'];
                         $todo->save();
+                        $this->logger->info("Updated position for Todo ID: {$item_pos['id']} successfully.", ['updated_position' => $item_pos['position']]);
+                    } else {
+                        $this->logger->warning("Todo ID: {$item_pos['id']} not found for position update.");
                     }
                 }
 
@@ -243,10 +272,12 @@ class TodoController
                     ],
                     $this->getCsrfTokens()
                 )));
+                $this->logger->info("Todos updated successfully, sending response.");
                 return $response
                     ->withStatus(200)
                     ->withHeader('Content-Type', 'application/json');
             } else {
+                $this->logger->warning("No item positions provided in the request.");
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'message' => 'No item positions provided.'

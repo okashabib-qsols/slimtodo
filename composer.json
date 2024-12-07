@@ -6,7 +6,8 @@
         "php-di/php-di": "^7.0",
         "slim/twig-view": "^3.4",
         "slim/csrf": "^1.5",
-        "monolog/monolog": "^3.8"
+        "monolog/monolog": "^3.8",
+        "illuminate/pagination": "^11.34"
     },
     "autoload": {
         "psr-4": {
