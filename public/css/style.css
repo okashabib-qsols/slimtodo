@@ -52,7 +52,7 @@ button {border: none;}
 #list { list-style: none; }
 #list li { position: relative; margin: 0 0 8px 0; padding: 0 0 0 70px; width: 607px; }
 #list li span { padding: 8px; -moz-border-radius: 5px; -webkit-border-radius: 5px; width: 589px; display: block; position: relative; cursor: pointer;}
-.colorBlue span { background: rgb(115, 184, 191); }
+.color-blue span { background: rgb(115, 184, 191); }
 .colorYellow span { background: rgb(255, 255, 255); }
 .colorRed span { background: rgb(187, 49, 47); color: white; }
 .colorGreen span { background: rgb(145, 191, 75); }
@@ -68,7 +68,7 @@ button {border: none;}
 .crossout { position: absolute; top: 50%; left: 0; height: 1px; }
 
 #share-area { margin: 20px 0 0 69px; width: 600px; }
-
+.completed{opacity: 0.5;}
 
 /*
     FORM STUFF

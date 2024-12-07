@@ -1,0 +1,6 @@
+<form id="add-new" method="post">
+	<input type="hidden" id="csrf_name" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+	<input type="hidden" id="csrf_value" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+	<input type="text" id="description" placeholder="New Todo" name="description"/>
+	<button type="submit" id="add-new-submit" class="button">Add</button>
+</form>

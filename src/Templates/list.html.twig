@@ -1,5 +1,5 @@
 {% macro todo_item(todo) %}
-    <li color={{todo.color}} class="{{todo.color == 1 ? 'colorBlue' : todo.color}} list" id="todo_{{todo.id}}" style="{{todo.is_done == 1 ? "opacity: 0.5;" : ""}}">
+    <li class="{{todo.color == 1 ? 'color-blue' : 'color-' ~ todo.color}} {{todo.is_done == 1 ? 'completed' : ''}} list" id="todo_{{todo.id}}">
         <span id="{{todo.id}}listitem" title="Double-click to edit..." style="background-color: {{todo.color != 1 ? todo.color : " "}}">
             {{ todo.description|e }}
             {% if todo.is_done == 1 %}

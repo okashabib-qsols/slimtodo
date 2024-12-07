@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/css/style.css">
-		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-		<title>Todo</title>
+		{% include 'head.twig' %}
 	</head>
 	<body>
 		<div id="page-wrap">
@@ -14,14 +10,8 @@
 					<a href="/">Todo</a>
 				</h1>
 			</div>
-			{# overlay #}
-			<div id="overlay"></div>
 
-			<!-- Loader -->
-			<div id="loader" role="status">
-				<img src="/images/loader.gif" width="50" height="50" alt="Loading...">
-				<span class="sr-only">Loading...</span>
-			</div>
+			{% include 'loader.twig' %}
 
 			<div id="main">
 				{% import 'list.html.twig' as list %}
@@ -35,21 +25,11 @@
 					{% endfor %}
 				</ul>
 				<br/>
-
-				<form id="add-new" method="post">
-					<input type="hidden" id="csrf_name" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-					<input type="hidden" id="csrf_value" name="{{csrf.keys.value}}" value="{{csrf.value}}">
-					<input type="text" id="description" placeholder="New Todo" name="description"/>
-					<button type="submit" id="add-new-submit" class="button">Add</button>
-				</form>
-
+				{% include 'todo-form.twig' %}
 			</div>
 		</div>
 		<noscript>This site just doesn't work, period, without JavaScript</noscript>
 
-		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
-	 <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js" defer></script>
-		 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
-		 <script src="/js/app.js" defer></script>
+		{% include 'scripts.twig' %}
 	</body>
 </html></body></html>

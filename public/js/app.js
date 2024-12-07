@@ -33,6 +33,7 @@ $(document).ready(function () {
                     item_positions: itemPositions
                 }),
                 success: function (response) {
+                    console.log(response)
                     if (response.success) {
                         Toastify({
                             text: response.message,
@@ -46,6 +47,8 @@ $(document).ready(function () {
                                 y: 30
                             },
                         }).showToast();
+                        $('#csrf_name').val(response.csrf.name);
+                        $('#csrf_value').val(response.csrf.value);
                     } else if (!response.success) {
                         Toastify({
                             text: response.message,
@@ -123,6 +126,7 @@ $(document).ready(function () {
             url: "http://localhost:8080/todos",
             data: JSON.stringify(formData),
             success: (response) => {
+                console.log(response)
                 if (response.success) {
                     Toastify({
                         text: response.message,
@@ -139,7 +143,7 @@ $(document).ready(function () {
 
                     $('#list').append(
                         `
-                        <li color="1" class="colorBlue list" id="todo_${response.data.id}">
+                        <li color="1" class="color-blue list" id="todo_${response.data.id}">
                             <span id="${response.data.id}listitem" title="Double-click to edit...">${response.data.description}</span>
                             <div class="draggertab tab"></div>
                             <div class="colortab tab"></div>
@@ -148,6 +152,9 @@ $(document).ready(function () {
                         </li>
                         `
                     )
+
+                    $('#csrf_name').val(response.csrf.name);
+                    $('#csrf_value').val(response.csrf.value);
 
                     $('#add-new')[0].reset()
                     $('#add-new-submit').attr('disabled', false)
@@ -212,11 +219,10 @@ $(document).ready(function () {
             data: {
                 is_done: 1
             },
-            success: function (res) {
-                if (res.success) {
-                    list.css({
-                        opacity: '0.5'
-                    })
+            success: function (response) {
+                if (response.success) {
+                    list.addClass('completed')
+
                     span.append(
                         `
                             <img src="/images/crossout.png" class="crossout" />
@@ -234,9 +240,11 @@ $(document).ready(function () {
                             y: 30
                         },
                     }).showToast();
-                } else if (!res.success) {
+                    $('#csrf_name').val(response.csrf.name);
+                    $('#csrf_value').val(response.csrf.value);
+                } else if (!response.success) {
                     Toastify({
-                        text: res.message,
+                        text: response.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -321,10 +329,10 @@ $(document).ready(function () {
                 description: inputVal
             },
             dataType: 'json',
-            success: function (res) {
-                if (res.success) {
+            success: function (response) {
+                if (response.success) {
                     Toastify({
-                        text: res.message,
+                        text: response.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -338,10 +346,11 @@ $(document).ready(function () {
                     $(this).attr('disabled', false).html(
                         `<button class="saveBtn">Save</button>`
                     );
-
-                } else if (!res.success) {
+                    $('#csrf_name').val(response.csrf.name);
+                    $('#csrf_value').val(response.csrf.value);
+                } else if (!response.success) {
                     Toastify({
-                        text: res.message,
+                        text: response.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -409,10 +418,10 @@ $(document).ready(function () {
                         color: colorVal
                     },
                     dataType: 'json',
-                    success: function (res) {
-                        if (res.success) {
+                    success: function (response) {
+                        if (response.success) {
                             Toastify({
-                                text: res.message,
+                                text: response.message,
                                 duration: 3000,
                                 stopOnFocus: true,
                                 position: "right",
@@ -425,10 +434,12 @@ $(document).ready(function () {
                             }).showToast();
 
                             $('.colorpicker').remove();
+                            $('#csrf_name').val(response.csrf.name);
+                            $('#csrf_value').val(response.csrf.value);
 
-                        } else if (!res.success) {
+                        } else if (!response.success) {
                             Toastify({
-                                text: res.message,
+                                text: response.message,
                                 duration: 3000,
                                 stopOnFocus: true,
                                 position: "right",
@@ -479,10 +490,10 @@ $(document).ready(function () {
                 'csrf_value': $('#csrf_value').val()
             },
             dataType: 'json',
-            success: function (res) {
-                if (res.success) {
+            success: function (response) {
+                if (response.success) {
                     Toastify({
-                        text: res.message,
+                        text: response.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
@@ -496,9 +507,11 @@ $(document).ready(function () {
 
                     $('#loader').hide()
                     list.remove();
-                } else if (!res.success) {
+                    $('#csrf_name').val(response.csrf.name);
+                    $('#csrf_value').val(response.csrf.value);
+                } else if (!response.success) {
                     Toastify({
-                        text: res.message,
+                        text: response.message,
                         duration: 3000,
                         stopOnFocus: true,
                         position: "right",
