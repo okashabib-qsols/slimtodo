@@ -3,21 +3,21 @@ namespace App\Controllers;
 
 use App\Models\Todo;
 use Illuminate\Pagination\Paginator;
-use Psr\Container\ContainerInterface;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Csrf\Guard;
+use Slim\Views\Twig;
 class TodoController
 {
-    protected $container;
     protected $view;
     protected $csrf;
     protected $logger;
-    public function __construct(ContainerInterface $container)
+    public function __construct(Twig $view, Guard $csrf, Logger $logger)
     {
-        $this->container = $container;
-        $this->view = $container->get("view");
-        $this->csrf = $container->get("csrf");
-        $this->logger = $container->get("logger");
+        $this->view = $view;
+        $this->csrf = $csrf;
+        $this->logger = $logger;
     }
 
     private function getCsrfTokens()
@@ -246,6 +246,7 @@ class TodoController
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
+    // /** @test */
 
     public function update_position(Request $request, Response $response)
     {
@@ -253,26 +254,26 @@ class TodoController
             $data = $request->getParsedBody();
             $this->logger->info("Received request to update positions.", ['data' => $data]);
             if (isset($data['position'])) {
-                foreach ($data['position'] as $item_pos) {
-                    $this->logger->info("Updating position for Todo ID: {$item_pos['id']}", ['new_position' => $item_pos['position']]);
-                    $todo = Todo::find($item_pos['id']);
+                foreach ($data['position'] as $item_positions) {
+                    $this->logger->info("Updating position for Todo ID: {$item_positions['id']}", ['new_position' => $item_positions['position']]);
+                    $todo = Todo::find($item_positions['id']);
                     if ($todo) {
-                        $todo->item_position = $item_pos['position'];
+                        $todo->item_position = $item_positions['position'];
                         $todo->save();
-                        $this->logger->info("Updated position for Todo ID: {$item_pos['id']} successfully.", ['updated_position' => $item_pos['position']]);
+                        $this->logger->info("Updated position for Todo ID: {$item_positions['id']} successfully.", ['updated_position' => $item_positions['position']]);
                     } else {
-                        $this->logger->warning("Todo ID: {$item_pos['id']} not found for position update.");
+                        $this->logger->warning("Todo ID: {$item_positions['id']} not found for position update.");
                     }
                 }
 
                 $response->getBody()->write(json_encode(array_merge(
                     [
                         'success' => true,
-                        'message' => 'Todos updated successfully.'
+                        'message' => 'Item Positions updated successfully.'
                     ],
                     $this->getCsrfTokens()
                 )));
-                $this->logger->info("Todos updated successfully, sending response.");
+                $this->logger->info("Item Positions updated successfully, sending response.");
                 return $response
                     ->withStatus(200)
                     ->withHeader('Content-Type', 'application/json');
@@ -285,7 +286,7 @@ class TodoController
                 return $response->withHeader('Content-Type', 'application/json');
             }
         } catch (\Exception $e) {
-            $this->logger->error("Exception while updating positions todos. Error: ", $e->getMessage());
+            $this->logger->error("Exception while updating positions todos. Error: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'An error occurred while updating positions todos.',
