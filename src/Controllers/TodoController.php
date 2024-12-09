@@ -127,7 +127,7 @@ class TodoController
                     ->withHeader('Content-Type', 'application/json');
             }
         } catch (\Exception $e) {
-            $this->logger->error("Exception while showing todo with id $id Error: ", $e->getMessage());
+            $this->logger->error("Exception while showing todo with id $id Error: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'An error occurred while showing todos.',
@@ -174,7 +174,7 @@ class TodoController
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            $this->logger->error("Exception while storing todo. Error: ", $e->getMessage());
+            $this->logger->error("Exception while storing todo. Error: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'An error occurred while storing todos.',
@@ -238,7 +238,7 @@ class TodoController
                     ->withHeader('Content-Type', 'application/json');
             }
         } catch (\Exception $e) {
-            $this->logger->error("Exception while updating todo with ID: $id Error: ", $e->getMessage());
+            $this->logger->error("Exception while updating todo with ID: $id Error: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'An error occurred while updating todos.',
@@ -246,7 +246,6 @@ class TodoController
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
-    // /** @test */
 
     public function update_position(Request $request, Response $response)
     {
@@ -336,7 +335,7 @@ class TodoController
                     ->withHeader('Content-Type', 'application/json');
             }
         } catch (\Exception $e) {
-            $this->logger->error("Exception while deleting todo with ID: $id Error: ", $e->getMessage());
+            $this->logger->error("Exception while deleting todo with ID: $id Error: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'An error occurred while deleting todos.',
