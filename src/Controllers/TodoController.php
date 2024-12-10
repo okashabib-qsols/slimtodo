@@ -136,7 +136,7 @@ class TodoController
         }
     }
 
-    public function store(Request $request, Response $response, $args)
+    public function store(Request $request, Response $response)
     {
         try {
             $form_data = $request->getParsedBody();
