@@ -156,9 +156,7 @@ class TodoController
             $position = $item_position + 1;
             $todo = Todo::create([
                 'description' => $form_data['description'],
-                'is_done' => 0,
                 'item_position' => $position,
-                'color' => 1
             ]);
 
             $response->getBody()->write(json_encode(array_merge(
